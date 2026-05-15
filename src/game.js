@@ -32,6 +32,16 @@ const SPECIAL_LINE = {
   penalty: { color: '#c084fc', glowColor: 'rgba(192,132,252,0.9)', label: '-30',  scoreDelta: -30 },
 };
 
+// ===== カラーボール設定（Lv3以降）=====
+const BALL_COLORS = [
+  { id: 'red',    ball: '#f87171', ballDark: '#991b1b', glow: '#f87171' },
+  { id: 'blue',   ball: '#60a5fa', ballDark: '#1e3a8a', glow: '#60a5fa' },
+  { id: 'green',  ball: '#4ade80', ballDark: '#166534', glow: '#4ade80' },
+  { id: 'purple', ball: '#c084fc', ballDark: '#581c87', glow: '#c084fc' },
+];
+// Lv3以降に登場するカラーゴールの定義（2色同時に出現）
+const COLOR_GOAL_COUNT = 2; // 最大2つのカラーゴール
+
 // ライフ機能は廃止。ゲームオーバーはゲージ0のみ。
 let lineIdCounter = 0;
 
@@ -200,6 +210,17 @@ class Item {
     }
   }
   draw(ctx) {
+    let bc = null;
+    if (this.ballColorId) {
+      bc = BALL_COLORS.find(c => c.id === this.ballColorId);
+    }
+    
+    const baseColor = bc ? bc.ball : '#facc15';
+    const darkColor = bc ? bc.ballDark : '#b45309';
+    const glowColor = bc ? bc.glow : '#facc15';
+    const trailColor = bc ? bc.ball : '#facc15';
+    const auraColor = bc ? bc.glow : 'rgba(250,204,21,0.12)';
+
     // 軌跡
     for (let i = 0; i < this.trail.length; i++) {
       const p = this.trail[i];
@@ -207,20 +228,28 @@ class Item {
       const r = this.radius * (i / this.trail.length) * 0.6;
       ctx.save(); ctx.globalAlpha = a;
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = '#facc15'; ctx.fill(); ctx.restore();
+      ctx.fillStyle = trailColor; ctx.fill(); ctx.restore();
     }
     // グロー
     const gs = 4 + Math.sin(this.pulse) * 2;
     ctx.save();
     ctx.beginPath(); ctx.arc(this.x, this.y, this.radius + gs, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(250,204,21,0.12)'; ctx.fill(); ctx.restore();
+    ctx.fillStyle = auraColor; 
+    // Alpha調整
+    ctx.globalAlpha = 0.15;
+    ctx.fill(); ctx.restore();
+    
     // 本体
     const g = ctx.createRadialGradient(this.x - 3, this.y - 3, 1, this.x, this.y, this.radius);
-    g.addColorStop(0, '#fef08a'); g.addColorStop(1, '#b45309');
+    g.addColorStop(0, '#fef08a'); // ハイライトは共通で白っぽく
+    g.addColorStop(0.3, baseColor);
+    g.addColorStop(1, darkColor);
+    
     ctx.save();
-    ctx.shadowBlur = 20; ctx.shadowColor = '#facc15';
+    ctx.shadowBlur = 20; ctx.shadowColor = glowColor;
     ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = g; ctx.fill(); ctx.restore();
+    
     // ハイライト
     ctx.save();
     ctx.beginPath(); ctx.arc(this.x - 4, this.y - 4, this.radius * 0.28, 0, Math.PI * 2);
@@ -266,6 +295,10 @@ export class Game {
 
     // ゴール配置（動的）: 各レーンの種別
     this.goalTypes = ['danger', 'safe', 'target', 'safe', 'danger'];
+    // カラーゴール: { laneIndex, colorId } の配列（Lv3以降）
+    this.colorGoals = [];          // 例: [{laneIndex:1, colorId:'red'}, {laneIndex:3, colorId:'blue'}]
+    this.lastColorGoalRotate = Date.now();
+    this.colorGoalRotateInterval = 10000; // 10秒で色変更
 
     this.lines = [];      // 全横線（ユーザー＋システム）
     this.items = [];
@@ -413,6 +446,8 @@ export class Game {
       this.onLevelChange?.(this.level);
       // レベル1以上でシステム線追加
       if (this.level >= 1) this._addSystemLine();
+      // Lv3でカラーゴール初期化
+      if (this.level === 3) this._initColorGoals();
     }
 
     // 難易度パラメータ
@@ -443,10 +478,22 @@ export class Game {
       this.lastSpecialLineTime = now;
     }
 
+    // カラーゴール更新（Lv3以降）
+    if (this.level >= 3 && now - this.lastColorGoalRotate > this.colorGoalRotateInterval) {
+      this._rotateColorGoals();
+      this.lastColorGoalRotate = now;
+    }
+
     // アイテム生成
     if (now - this.lastSpawnTime > this.spawnInterval) {
       const lane = randInt(0, LANE_COUNT - 1);
       const item = new Item(lane, this.speedMult);
+      // Lv3以降: 一定確率でカラーボール生成
+      if (this.level >= 3 && this.colorGoals.length > 0 && Math.random() < 0.45) {
+        // colorGoalsの中からランダムに選んで対応ボールを生成
+        const cg = this.colorGoals[randInt(0, this.colorGoals.length - 1)];
+        item.ballColorId = cg.colorId;
+      }
       item.setLines(this.lines);
       this.items.push(item);
       this.lastSpawnTime = now;
@@ -495,6 +542,37 @@ export class Game {
     const type = this.goalTypes[item.currentLane];
     const def = GOAL_DEFS[type];
 
+    // ===== カラーボール判定 =====
+    if (item.ballColorId) {
+      const matchGoal = this.colorGoals.find(
+        cg => cg.laneIndex === item.currentLane && cg.colorId === item.ballColorId
+      );
+      const bc = BALL_COLORS.find(c => c.id === item.ballColorId);
+      if (matchGoal) {
+        // 正解！大量スコア＋ゲージ回復
+        this.combo++;
+        if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+        const gained = 300 + Math.floor(this.combo * 15);
+        this.score += gained;
+        this.gauge = Math.min(this.gaugeMax, this.gauge + 25);
+        this._burst(item.x, item.y, bc.glow, 35, { spread: 12, upward: 4, maxSize: 8 });
+        this.floatingTexts.push(new FloatingText(item.x, item.y - 30, `PERFECT! +${gained}`, bc.ball));
+        this.onScoreChange?.(this.score);
+        this.onComboChange?.(this.combo);
+        return;
+      } else {
+        // 不正解：ゲージ大幅減
+        this.combo = 0;
+        this.gauge = Math.max(0, this.gauge - 25);
+        this._burst(item.x, item.y, '#f87171', 20, { spread: 12 });
+        this.floatingTexts.push(new FloatingText(item.x, item.y - 30, 'WRONG!', '#f87171'));
+        this.canvas.classList.add('shake');
+        setTimeout(() => this.canvas.classList.remove('shake'), 400);
+        this.onComboChange?.(0);
+        return;
+      }
+    }
+
     if (type === 'target') {
       this.combo++;
       if (this.combo > this.maxCombo) this.maxCombo = this.combo;
@@ -525,6 +603,27 @@ export class Game {
       this.onScoreChange?.(this.score);
       this.onComboChange?.(this.combo);
     }
+  }
+
+  // ===== カラーゴール管理 =====
+  _initColorGoals() {
+    // safeゴールのレーンからCOLOR_GOAL_COUNT個選んでカラーゴールに
+    const safeLanes = this.goalTypes
+      .map((t, i) => t === 'safe' ? i : -1).filter(i => i !== -1);
+    const chosen = safeLanes.sort(() => Math.random() - 0.5).slice(0, COLOR_GOAL_COUNT);
+    const shuffledColors = [...BALL_COLORS].sort(() => Math.random() - 0.5);
+    this.colorGoals = chosen.map((li, idx) => ({
+      laneIndex: li,
+      colorId: shuffledColors[idx % shuffledColors.length].id,
+    }));
+  }
+
+  _rotateColorGoals() {
+    // 各カラーゴールの色をランダムに変える
+    const shuffledColors = [...BALL_COLORS].sort(() => Math.random() - 0.5);
+    this.colorGoals.forEach((cg, i) => {
+      cg.colorId = shuffledColors[i % shuffledColors.length].id;
+    });
   }
 
   // _loseLife は廃止（ゲージで管理）
@@ -613,7 +712,12 @@ export class Game {
       const gx = i * LANE_W;
       const gy = PLAY_H;
       const type = this.goalTypes[i];
-      const def = GOAL_DEFS[type];
+      // カラーゴールを確認
+      const colorGoal = this.colorGoals.find(cg => cg.laneIndex === i);
+      const bc = colorGoal ? BALL_COLORS.find(c => c.id === colorGoal.colorId) : null;
+      const def = bc
+        ? { color: bc.ball, label: '●', score: 300, glow: true }
+        : GOAL_DEFS[type];
 
       ctx.fillStyle = '#0a1628';
       ctx.fillRect(gx, gy, LANE_W, GOAL_H);
@@ -625,30 +729,41 @@ export class Game {
       // グロー
       if (def.glow) {
         const gg = ctx.createLinearGradient(gx, gy, gx, gy + GOAL_H);
-        gg.addColorStop(0, def.color + '28');
+        gg.addColorStop(0, def.color + '30');
         gg.addColorStop(1, 'transparent');
         ctx.fillStyle = gg;
         ctx.fillRect(gx, gy, LANE_W, GOAL_H);
       }
 
-      // ラベル
+      // ラベル（カラーゴールは色付き円）
       ctx.save();
-      ctx.fillStyle = def.color;
-      ctx.font = `bold 24px Inter, sans-serif`;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      if (def.glow) { ctx.shadowBlur = 12; ctx.shadowColor = def.color; }
-      ctx.fillText(def.label, gx + LANE_W / 2, gy + GOAL_H * 0.45);
+      if (bc) {
+        ctx.shadowBlur = 14; ctx.shadowColor = bc.glow;
+        ctx.fillStyle = bc.ball;
+        ctx.beginPath();
+        ctx.arc(gx + LANE_W / 2, gy + GOAL_H * 0.44, 14, 0, Math.PI * 2);
+        ctx.fill();
+        // 中の丸
+        ctx.fillStyle = bc.ballDark;
+        ctx.beginPath();
+        ctx.arc(gx + LANE_W / 2, gy + GOAL_H * 0.44, 7, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = def.color;
+        ctx.font = `bold 24px Inter, sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        if (def.glow) { ctx.shadowBlur = 12; ctx.shadowColor = def.color; }
+        ctx.fillText(def.label, gx + LANE_W / 2, gy + GOAL_H * 0.45);
+      }
       ctx.restore();
 
-      // スコア
-      if (def.score > 0) {
-        ctx.save();
-        ctx.fillStyle = def.color + 'bb';
-        ctx.font = `600 11px Inter, sans-serif`;
-        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-        ctx.fillText(`+${def.score}`, gx + LANE_W / 2, gy + GOAL_H - 5);
-        ctx.restore();
-      }
+      // スコア表示
+      ctx.save();
+      ctx.fillStyle = def.color + 'bb';
+      ctx.font = `600 10px Inter, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText(`+${def.score}`, gx + LANE_W / 2, gy + GOAL_H - 4);
+      ctx.restore();
 
       // 区切り線
       ctx.save();
