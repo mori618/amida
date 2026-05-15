@@ -11,64 +11,62 @@
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
-  <div id="app">
-    <!-- タイトル画面 -->
-    <div id="title-screen" class="overlay">
-      <div class="title-card">
-        <h1 class="game-title">AMIDA<br><span>DROP</span></h1>
-        <p class="game-subtitle">あみだくじアクション</p>
-        <div class="how-to">
-          <p>🎯 ボールを正しいゴールへ誘導しよう</p>
-          <p>👆 画面をクリック / タップで横線を引く</p>
-          <p>❌ 危険なゴールに入るとライフ減少</p>
-        </div>
-        <button id="start-btn" class="btn btn-primary">ゲームスタート</button>
-      </div>
-    </div>
+<div id="app">
 
-    <!-- ゲームUI -->
-    <div id="game-ui" style="display:none">
-      <!-- ヘッダーUI -->
-      <div id="hud">
-        <div class="hud-item">
-          <span class="hud-label">SCORE</span>
-          <span id="score-display" class="hud-value score-val">0</span>
-        </div>
-        <div class="hud-item hud-center">
-          <span id="combo-display" class="combo-badge" style="opacity:0">COMBO x1</span>
-        </div>
-        <div class="hud-item hud-right">
-          <span class="hud-label">LIVES</span>
-          <div id="lives-display" class="lives-icons"></div>
-        </div>
+  <!-- タイトル画面 -->
+  <div id="title-screen" class="overlay">
+    <div class="title-card">
+      <h1 class="game-title">AMIDA<br><span>DROP</span></h1>
+      <p class="game-subtitle">あみだくじアクション</p>
+      <div class="how-to">
+        <div class="how-row"><span class="how-icon">🎯</span><span>ボールを★ゴールへ誘導してスコア獲得</span></div>
+        <div class="how-row"><span class="how-icon">👆</span><span>タップで横線を引く / もう一度タップで消す</span></div>
+        <div class="how-row"><span class="how-icon">⚡</span><span>ENERGYゲージがなくなるとゲームオーバー</span></div>
+        <div class="how-row"><span class="how-icon">★</span><span>★に入るとゲージ回復！✕に入るとゲージ大幅減</span></div>
+        <div class="how-row"><span class="how-icon">🟡</span><span>金の線→スコア・Energy UP、紫の線→DOWN</span></div>
+        <div class="how-row"><span class="how-icon">🔵</span><span>紫の太線はシステムが配置（消せない）</span></div>
       </div>
-
-      <!-- キャンバス -->
-      <div id="canvas-wrapper">
-        <canvas id="gameCanvas" width="400" height="600"></canvas>
-      </div>
-    </div>
-
-    <!-- ゲームオーバー画面 -->
-    <div id="game-over-screen" class="overlay" style="display:none">
-      <div class="result-card">
-        <h2 class="result-title">GAME OVER</h2>
-        <div class="result-stats">
-          <div class="stat-row">
-            <span class="stat-label">FINAL SCORE</span>
-            <span id="final-score" class="stat-value">0</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">MAX COMBO</span>
-            <span id="final-combo" class="stat-value combo-color">0</span>
-          </div>
-        </div>
-        <button id="restart-btn" class="btn btn-primary">TRY AGAIN</button>
-        <button id="title-btn" class="btn btn-secondary">タイトルへ</button>
-      </div>
+      <button id="start-btn" class="btn btn-primary">ゲームスタート</button>
     </div>
   </div>
 
-  <script type="module" src="/src/main.js"></script>
+  <!-- ゲームUI -->
+  <div id="game-ui" style="display:none">
+    <div id="hud">
+      <div class="hud-block">
+        <span class="hud-label">SCORE</span>
+        <span id="score-display" class="hud-value score-val">0</span>
+      </div>
+      <div class="hud-block hud-center">
+        <span id="level-display" class="level-badge">LV 1</span>
+        <span id="combo-display" class="combo-badge" style="opacity:0">COMBO ×1</span>
+      </div>
+    </div>
+    <div id="canvas-wrapper">
+      <canvas id="gameCanvas" width="360" height="640"></canvas>
+    </div>
+  </div>
+
+  <!-- ゲームオーバー -->
+  <div id="game-over-screen" class="overlay" style="display:none">
+    <div class="result-card">
+      <h2 class="result-title">GAME OVER</h2>
+      <div class="result-stats">
+        <div class="stat-row">
+          <span class="stat-label">FINAL SCORE</span>
+          <span id="final-score" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">MAX COMBO</span>
+          <span id="final-combo" class="stat-value combo-color">0</span>
+        </div>
+      </div>
+      <button id="restart-btn" class="btn btn-primary">TRY AGAIN</button>
+      <button id="title-btn" class="btn btn-secondary">タイトルへ</button>
+    </div>
+  </div>
+
+</div>
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>

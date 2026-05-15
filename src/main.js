@@ -1,11 +1,9 @@
 /**
- * main.js - Amida Drop エントリーポイント
- * 画面遷移・UIの制御を担当
+ * main.js - Amida Drop エントリーポイント（スマホ前提版）
  */
 import './style.css';
 import { Game } from './game.js';
 
-// ===== DOM要素の取得 =====
 const titleScreen    = document.getElementById('title-screen');
 const gameUI         = document.getElementById('game-ui');
 const gameOverScreen = document.getElementById('game-over-screen');
@@ -13,27 +11,25 @@ const startBtn       = document.getElementById('start-btn');
 const restartBtn     = document.getElementById('restart-btn');
 const titleBtn       = document.getElementById('title-btn');
 const scoreDisplay   = document.getElementById('score-display');
-const livesDisplay   = document.getElementById('lives-display');
 const comboDisplay   = document.getElementById('combo-display');
+const levelDisplay   = document.getElementById('level-display');
 const finalScore     = document.getElementById('final-score');
 const finalCombo     = document.getElementById('final-combo');
 const canvas         = document.getElementById('gameCanvas');
 
-const MAX_LIVES = 3;
 
-// ===== Canvasサイズの調整 =====
+
+
+// ===== Canvasサイズ：スマホ縦画面に最適化 =====
 function resizeCanvas() {
-  const maxH = window.innerHeight - 80; // HUD分を引く
-  const maxW = window.innerWidth;
-  const aspect = 400 / 600;
-  let w = Math.min(maxW, maxH * aspect);
-  let h = w / aspect;
+  const hudH = 64; // HUDの高さ
+  const avH = window.innerHeight - hudH;
+  const avW = window.innerWidth;
+  const aspect = 360 / 640; // キャンバスの縦横比
 
-  // 最大サイズ制限
-  if (h > maxH) {
-    h = maxH;
-    w = h * aspect;
-  }
+  let w = avW;
+  let h = w / aspect;
+  if (h > avH) { h = avH; w = h * aspect; }
 
   canvas.style.width  = `${Math.floor(w)}px`;
   canvas.style.height = `${Math.floor(h)}px`;
@@ -41,33 +37,17 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// ===== ライフハート表示 =====
-function renderLives(lives) {
-  livesDisplay.innerHTML = '';
-  for (let i = 0; i < MAX_LIVES; i++) {
-    const span = document.createElement('span');
-    span.className = `life-heart${i >= lives ? ' lost' : ''}`;
-    span.textContent = '❤️';
-    livesDisplay.appendChild(span);
-  }
-}
 
 // ===== コンボ表示 =====
 let comboTimer = null;
 function renderCombo(combo) {
   if (combo > 1) {
-    comboDisplay.textContent = `COMBO x${combo}`;
+    comboDisplay.textContent = `COMBO ×${combo}`;
     comboDisplay.style.opacity = '1';
     comboDisplay.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-      comboDisplay.style.transform = 'scale(1)';
-    }, 150);
-
-    // 一定時間で非表示
+    setTimeout(() => { comboDisplay.style.transform = 'scale(1)'; }, 150);
     clearTimeout(comboTimer);
-    comboTimer = setTimeout(() => {
-      comboDisplay.style.opacity = '0';
-    }, 2000);
+    comboTimer = setTimeout(() => { comboDisplay.style.opacity = '0'; }, 2200);
   } else {
     comboDisplay.style.opacity = '0';
     clearTimeout(comboTimer);
@@ -76,22 +56,24 @@ function renderCombo(combo) {
 
 // ===== スコア表示 =====
 function renderScore(score) {
-  scoreDisplay.textContent = score;
-  scoreDisplay.style.transform = 'scale(1.3)';
-  setTimeout(() => {
-    scoreDisplay.style.transform = 'scale(1)';
-  }, 100);
+  scoreDisplay.textContent = score.toLocaleString();
+  scoreDisplay.style.transform = 'scale(1.25)';
+  setTimeout(() => { scoreDisplay.style.transform = 'scale(1)'; }, 100);
 }
 
-// ===== ゲームインスタンス生成 =====
-const game = new Game(canvas);
+// ===== レベル表示 =====
+function renderLevel(level) {
+  if (levelDisplay) levelDisplay.textContent = `LV ${level + 1}`;
+}
 
-game.onScoreChange = (score) => renderScore(score);
-game.onLivesChange = (lives) => renderLives(lives);
-game.onComboChange = (combo) => renderCombo(combo);
-game.onGameOver   = (score, maxCombo) => {
-  finalScore.textContent  = score;
-  finalCombo.textContent  = maxCombo;
+// ===== ゲームインスタンス =====
+const game = new Game(canvas);
+game.onScoreChange = renderScore;
+game.onComboChange = renderCombo;
+game.onLevelChange = renderLevel;
+game.onGameOver = (score, maxCombo) => {
+  finalScore.textContent = score.toLocaleString();
+  finalCombo.textContent = maxCombo;
   gameOverScreen.style.display = 'flex';
 };
 
@@ -106,30 +88,17 @@ function showGame() {
   titleScreen.style.display    = 'none';
   gameUI.style.display         = 'flex';
   gameOverScreen.style.display = 'none';
-
-  // 初期UI
   renderScore(0);
-  renderLives(MAX_LIVES);
   renderCombo(0);
+  renderLevel(0);
 }
 
-// ===== ボタンイベント =====
-startBtn.addEventListener('click', () => {
-  showGame();
-  game.start();
-});
-
+startBtn.addEventListener('click', () => { showGame(); game.start(); });
 restartBtn.addEventListener('click', () => {
   gameOverScreen.style.display = 'none';
-  renderScore(0);
-  renderLives(MAX_LIVES);
-  renderCombo(0);
+  renderScore(0); renderCombo(0); renderLevel(0);
   game.restart();
 });
+titleBtn.addEventListener('click', showTitle);
 
-titleBtn.addEventListener('click', () => {
-  showTitle();
-});
-
-// ===== 初期状態 =====
 showTitle();
