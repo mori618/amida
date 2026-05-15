@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Amida Drop | あみだくじアクション</title>
+  <meta name="description" content="落下するボールをあみだくじの横線でゴールへ誘導するリアルタイムアクションパズルゲーム。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- タイトル画面 -->
+    <div id="title-screen" class="overlay">
+      <div class="title-card">
+        <h1 class="game-title">AMIDA<br><span>DROP</span></h1>
+        <p class="game-subtitle">あみだくじアクション</p>
+        <div class="how-to">
+          <p>🎯 ボールを正しいゴールへ誘導しよう</p>
+          <p>👆 画面をクリック / タップで横線を引く</p>
+          <p>❌ 危険なゴールに入るとライフ減少</p>
+        </div>
+        <button id="start-btn" class="btn btn-primary">ゲームスタート</button>
+      </div>
+    </div>
+
+    <!-- ゲームUI -->
+    <div id="game-ui" style="display:none">
+      <!-- ヘッダーUI -->
+      <div id="hud">
+        <div class="hud-item">
+          <span class="hud-label">SCORE</span>
+          <span id="score-display" class="hud-value score-val">0</span>
+        </div>
+        <div class="hud-item hud-center">
+          <span id="combo-display" class="combo-badge" style="opacity:0">COMBO x1</span>
+        </div>
+        <div class="hud-item hud-right">
+          <span class="hud-label">LIVES</span>
+          <div id="lives-display" class="lives-icons"></div>
+        </div>
+      </div>
+
+      <!-- キャンバス -->
+      <div id="canvas-wrapper">
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+      </div>
+    </div>
+
+    <!-- ゲームオーバー画面 -->
+    <div id="game-over-screen" class="overlay" style="display:none">
+      <div class="result-card">
+        <h2 class="result-title">GAME OVER</h2>
+        <div class="result-stats">
+          <div class="stat-row">
+            <span class="stat-label">FINAL SCORE</span>
+            <span id="final-score" class="stat-value">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">MAX COMBO</span>
+            <span id="final-combo" class="stat-value combo-color">0</span>
+          </div>
+        </div>
+        <button id="restart-btn" class="btn btn-primary">TRY AGAIN</button>
+        <button id="title-btn" class="btn btn-secondary">タイトルへ</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
