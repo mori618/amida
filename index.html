@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Amida Drop | あみだくじアクション</title>
-  <meta name="description" content="落下するボールをあみだくじの横線でゴールへ誘導するリアルタイムアクションパズルゲーム。" />
+  <meta name="description" content="落下するボールをあみだくじの横線でゴールへ誘導するリアルタイムアクションパズルゲーム。200ステージ収録。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
-  <script type="module" crossorigin src="/amida/assets/index-CwZzI_HZ.js"></script>
-  <link rel="stylesheet" crossorigin href="/amida/assets/index-Bu1Ua_Y1.css">
+  <script type="module" crossorigin src="/amida/assets/index-D4a_q-Ca.js"></script>
+  <link rel="stylesheet" crossorigin href="/amida/assets/index-Cise55YS.css">
 </head>
 <body>
 <div id="app">
@@ -21,15 +21,57 @@
       <h1 class="game-title">AMIDA<br><span>DROP</span></h1>
       <p class="game-subtitle">あみだくじアクション</p>
       <div class="how-to">
-        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--target);">my_location</span><span>ボールをゴールへ誘導してスコア獲得</span></div>
+        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--target);">my_location</span><span>ボールを★ゴールへ誘導してスコア獲得</span></div>
         <div class="how-row"><span class="how-icon material-symbols-outlined">touch_app</span><span>タップで横線を引く / もう一度タップで消す</span></div>
-        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--bonus);">bolt</span><span>ENERGYゲージがなくなるとゲームオーバー</span></div>
-        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--score);">star</span><span>ゴールに入るとゲージ回復！✕に入るとゲージ大幅減</span></div>
-        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--bonus); font-weight:900;">horizontal_rule</span><span>金の線→スコア・Energy UP、紫の線→DOWN</span></div>
-        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--system); font-weight:900;">horizontal_rule</span><span>紫の太線はシステムが配置（消せない）</span></div>
-        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--accent);">palette</span><span>色付きのボールは同じ色のゴールに入れる！</span></div>
+        <div class="how-row"><span class="how-icon" style="color:#f472b6;font-size:1rem;">⇌</span><span>ピンク二重線 = ワープ、虹線 = 色変え</span></div>
+        <div class="how-row"><span class="how-icon" style="color:#ffffff;font-size:1rem;">●</span><span>白点滅線 = ON/OFFで通れる、水色線 = 上下移動</span></div>
+        <div class="how-row"><span class="how-icon" style="color:#f97316;font-size:1rem;">▶</span><span>オレンジ線 = スピードアップ！</span></div>
       </div>
       <button id="start-btn" class="btn btn-primary">ゲームスタート</button>
+    </div>
+  </div>
+
+  <!-- モード選択画面 -->
+  <div id="mode-screen" class="overlay" style="display:none">
+    <div class="mode-card">
+      <h2 class="mode-title">モード選択</h2>
+      <button id="mode-stage-btn" class="mode-btn">
+        <span class="mode-btn-icon material-symbols-outlined">sports_esports</span>
+        <span class="mode-btn-label">ステージクリア</span>
+        <span class="mode-btn-sub">200ステージ・★評価・進捗保存</span>
+      </button>
+      <button id="mode-endless-btn" class="mode-btn mode-btn-endless">
+        <span class="mode-btn-icon material-symbols-outlined">all_inclusive</span>
+        <span class="mode-btn-label">エンドレス</span>
+        <span class="mode-btn-sub">エナジーゲージが0になるまで！</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ステージ選択画面 -->
+  <div id="stage-select" class="overlay stage-select-overlay" style="display:none">
+    <div class="stage-select-inner">
+      <div class="stage-select-header">
+        <button id="stage-back-btn" class="btn-icon"><span class="material-symbols-outlined">arrow_back</span></button>
+        <h2 class="stage-select-title">ステージ選択</h2>
+        <span></span>
+      </div>
+      <div id="stage-grid" class="stage-grid"></div>
+    </div>
+  </div>
+
+  <!-- ステージ情報画面 -->
+  <div id="stage-info-screen" class="overlay" style="display:none">
+    <div class="stage-info-card">
+      <h2 id="stage-info-title" class="stage-info-title">STAGE 1</h2>
+      <p id="stage-info-desc" class="stage-info-desc"></p>
+      <div class="stage-info-rows">
+        <div class="stage-info-row" id="stage-info-goal"></div>
+        <div class="stage-info-row" id="stage-info-miss"></div>
+        <div class="stage-info-row" id="stage-info-gimmick"></div>
+      </div>
+      <button id="stage-start-btn" class="btn btn-primary">スタート！</button>
+      <button id="stage-info-back-btn" class="btn btn-secondary">戻る</button>
     </div>
   </div>
 
@@ -40,9 +82,27 @@
         <span class="hud-label">SCORE</span>
         <span id="score-display" class="hud-value score-val">0</span>
       </div>
-      <div class="hud-block hud-center">
+      <div class="hud-block hud-center" id="hud-center-block">
         <span id="level-display" class="level-badge">LV 1</span>
         <span id="combo-display" class="combo-badge" style="opacity:0">COMBO ×1</span>
+      </div>
+      <!-- ステージモード用 -->
+      <div class="hud-block hud-right" id="hud-stage-info" style="display:none">
+        <div id="hud-goal-row" class="hud-stage-row" style="display:none">
+          <span class="hud-label">GOAL</span>
+          <span id="goal-display" class="hud-value" style="color:var(--target);font-size:1rem">0 / -</span>
+        </div>
+        <div id="hud-miss-row" class="hud-stage-row" style="display:none">
+          <span id="miss-display" class="hud-miss">MISS: 0</span>
+        </div>
+        <div id="hud-time-row" class="hud-stage-row" style="display:none">
+          <span id="time-display" class="hud-time">--s</span>
+        </div>
+      </div>
+      <!-- エンドレスモード用ゲージ -->
+      <div id="hud-gauge-row" class="hud-gauge-row">
+        <span class="hud-label" style="color:var(--muted);font-size:0.5rem">ENERGY</span>
+        <div class="gauge-track"><div id="gauge-bar-inner" class="gauge-bar"></div></div>
       </div>
     </div>
     <div id="canvas-wrapper">
@@ -66,6 +126,27 @@
       </div>
       <button id="restart-btn" class="btn btn-primary">TRY AGAIN</button>
       <button id="title-btn" class="btn btn-secondary">タイトルへ</button>
+    </div>
+  </div>
+
+  <!-- ステージクリア -->
+  <div id="stage-clear-screen" class="overlay" style="display:none">
+    <div class="clear-card">
+      <h2 class="clear-title">STAGE CLEAR!</h2>
+      <div id="clear-stars" class="clear-stars-row"></div>
+      <div class="result-stats">
+        <div class="stat-row">
+          <span class="stat-label">SCORE</span>
+          <span id="clear-score" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">MAX COMBO</span>
+          <span id="clear-combo" class="stat-value combo-color">0</span>
+        </div>
+      </div>
+      <button id="clear-next-btn" class="btn btn-primary">次のステージ</button>
+      <button id="clear-retry-btn" class="btn btn-secondary">もう一度</button>
+      <button id="clear-title-btn" class="btn btn-secondary">タイトルへ</button>
     </div>
   </div>
 
