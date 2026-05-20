@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
-  <script type="module" crossorigin src="/amida/assets/index-CVouyX_2.js"></script>
-  <link rel="stylesheet" crossorigin href="/amida/assets/index-W5ZD27K3.css">
+  <script type="module" crossorigin src="/amida/assets/index-BLJz9Fh9.js"></script>
+  <link rel="stylesheet" crossorigin href="/amida/assets/index-IN-pbIDm.css">
 </head>
 <body>
 <div id="app">
@@ -78,15 +78,10 @@
   <!-- ゲームUI -->
   <div id="game-ui" style="display:none">
     <div id="hud">
-      <div class="hud-block">
-        <span class="hud-label">SCORE</span>
-        <span id="score-display" class="hud-value score-val">0</span>
-      </div>
       <div class="hud-block hud-center" id="hud-center-block">
         <span id="level-display" class="level-badge">LV 1</span>
-        <span id="combo-display" class="combo-badge" style="opacity:0">COMBO ×1</span>
       </div>
-      <!-- ステージモード用 -->
+      <!-- ステージ情報 -->
       <div class="hud-block hud-right" id="hud-stage-info" style="display:none">
         <div id="hud-goal-row" class="hud-stage-row" style="display:none">
           <span class="hud-label">GOAL</span>
@@ -99,7 +94,7 @@
           <span id="time-display" class="hud-time">--s</span>
         </div>
       </div>
-      <!-- エンドレスモード用ゲージ -->
+      <!-- ゲージ -->
       <div id="hud-gauge-row" class="hud-gauge-row">
         <span class="hud-label" style="color:var(--muted);font-size:0.5rem">ENERGY</span>
         <div class="gauge-track"><div id="gauge-bar-inner" class="gauge-bar"></div></div>
@@ -126,14 +121,6 @@
     <div class="result-card">
       <h2 class="result-title">GAME OVER</h2>
       <div class="result-stats">
-        <div class="stat-row">
-          <span class="stat-label">FINAL SCORE</span>
-          <span id="final-score" class="stat-value">0</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">MAX COMBO</span>
-          <span id="final-combo" class="stat-value combo-color">0</span>
-        </div>
       </div>
       <button id="restart-btn" class="btn btn-primary">TRY AGAIN</button>
       <button id="title-btn" class="btn btn-secondary">タイトルへ</button>
@@ -146,14 +133,6 @@
       <h2 class="clear-title">STAGE CLEAR!</h2>
       <div id="clear-stars" class="clear-stars-row"></div>
       <div class="result-stats">
-        <div class="stat-row">
-          <span class="stat-label">SCORE</span>
-          <span id="clear-score" class="stat-value">0</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">MAX COMBO</span>
-          <span id="clear-combo" class="stat-value combo-color">0</span>
-        </div>
       </div>
       <button id="clear-next-btn" class="btn btn-primary">次のステージ</button>
       <button id="clear-retry-btn" class="btn btn-secondary">もう一度</button>
