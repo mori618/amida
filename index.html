@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
-  <script type="module" crossorigin src="/amida/assets/index-BMwjrAMu.js"></script>
-  <link rel="stylesheet" crossorigin href="/amida/assets/index-CrDSfhPu.css">
+  <script type="module" crossorigin src="/amida/assets/index-DeTBgKGP.js"></script>
+  <link rel="stylesheet" crossorigin href="/amida/assets/index-xwjmUL-D.css">
 </head>
 <body>
 <div id="app">
@@ -96,14 +96,15 @@
           <span id="time-display" class="hud-time">--s</span>
         </div>
       </div>
-      <!-- ゲージ -->
-      <div id="hud-gauge-row" class="hud-gauge-row">
-        <span class="hud-label" style="color:var(--muted);font-size:0.5rem">ENERGY</span>
-        <div class="gauge-track"><div id="gauge-bar-inner" class="gauge-bar"></div></div>
-      </div>
       <!-- ポーズボタン -->
       <button id="pause-btn" class="btn-icon" style="padding:4px; margin-left:4px;"><span class="material-symbols-outlined">pause</span></button>
     </div>
+
+    <!-- ゲージを独立させて幅広にする（ラベルは非表示） -->
+    <div id="hud-gauge-row" class="hud-gauge-row">
+      <div class="gauge-track"><div id="gauge-bar-inner" class="gauge-bar"></div></div>
+    </div>
+
     <div id="canvas-wrapper">
       <canvas id="gameCanvas" width="360" height="640"></canvas>
     </div>
