@@ -7,10 +7,10 @@
   <meta name="description" content="落下するボールをあみだくじの横線でゴールへ誘導するリアルタイムアクションパズルゲーム。200ステージ収録。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
-  <script type="module" crossorigin src="/amida/assets/index-5P4Tap1D.js"></script>
-  <link rel="stylesheet" crossorigin href="/amida/assets/index-xwjmUL-D.css">
+  <script type="module" crossorigin src="/amida/assets/index-DJ9dKdHx.js"></script>
+  <link rel="stylesheet" crossorigin href="/amida/assets/index-MMGrYDSA.css">
 </head>
 <body>
 <div id="app">
@@ -19,9 +19,11 @@
 
   <!-- タイトル画面 -->
   <div id="title-screen" class="overlay">
-    <div class="title-card">
+    <div class="title-card wood-card">
+      <div class="title-board-frame">
       <h1 class="game-title">AMIDA<br><span>DROP</span></h1>
       <p class="game-subtitle">あみだくじアクション</p>
+      </div><!-- /.title-board-frame -->
       <div class="how-to">
         <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--target);">my_location</span><span>ボールを★ゴールへ誘導してスコア獲得</span></div>
         <div class="how-row"><span class="how-icon material-symbols-outlined">touch_app</span><span>タップで横線を引く / もう一度タップで消す</span></div>
@@ -35,7 +37,7 @@
 
   <!-- モード選択画面 -->
   <div id="mode-screen" class="overlay" style="display:none">
-    <div class="mode-card">
+    <div class="mode-card wood-card">
       <h2 class="mode-title">モード選択</h2>
       <button id="mode-stage-btn" class="mode-btn">
         <span class="mode-btn-icon material-symbols-outlined">sports_esports</span>
@@ -64,7 +66,7 @@
 
   <!-- ステージ情報画面 -->
   <div id="stage-info-screen" class="overlay" style="display:none">
-    <div class="stage-info-card">
+    <div class="stage-info-card wood-card">
       <h2 id="stage-info-title" class="stage-info-title">STAGE 1</h2>
       <p id="stage-info-desc" class="stage-info-desc"></p>
       <div class="stage-info-rows">
@@ -112,7 +114,7 @@
 
   <!-- ポーズ画面 -->
   <div id="pause-screen" class="overlay" style="display:none">
-    <div class="result-card">
+    <div class="result-card wood-card">
       <h2 class="result-title" style="color:var(--text); text-shadow:0 0 20px rgba(255,255,255,0.3);">PAUSE</h2>
       <button id="resume-btn" class="btn btn-primary">再開</button>
       <button id="pause-title-btn" class="btn btn-secondary">タイトルへ</button>
@@ -121,7 +123,7 @@
 
   <!-- ゲームオーバー -->
   <div id="game-over-screen" class="overlay" style="display:none">
-    <div class="result-card">
+    <div class="result-card wood-card">
       <h2 class="result-title">GAME OVER</h2>
       <div class="result-stats">
       </div>
@@ -132,7 +134,7 @@
 
   <!-- ステージクリア -->
   <div id="stage-clear-screen" class="overlay" style="display:none">
-    <div class="clear-card">
+    <div class="clear-card wood-card">
       <h2 class="clear-title">STAGE CLEAR!</h2>
       <div id="clear-stars" class="clear-stars-row"></div>
       <div class="result-stats">
