@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
-  <script type="module" crossorigin src="/amida/assets/index-CTlT8CiG.js"></script>
-  <link rel="stylesheet" crossorigin href="/amida/assets/index-C4dr9WM2.css">
+  <script type="module" crossorigin src="/amida/assets/index-XUUF92bi.js"></script>
+  <link rel="stylesheet" crossorigin href="/amida/assets/index-UI2x9Cx7.css">
 </head>
 <body>
 <div id="app">
@@ -48,6 +48,11 @@
         <span class="mode-btn-icon material-symbols-outlined">all_inclusive</span>
         <span class="mode-btn-label">エンドレス</span>
         <span class="mode-btn-sub">エナジーゲージが0になるまで！</span>
+      </button>
+      <button id="mode-quiz-btn" class="mode-btn mode-btn-quiz">
+        <span class="mode-btn-icon material-symbols-outlined">quiz</span>
+        <span class="mode-btn-label">クイズモード</span>
+        <span class="mode-btn-sub">軌道を予測して正解を導き出そう！</span>
       </button>
     </div>
   </div>
@@ -109,6 +114,46 @@
 
     <div id="canvas-wrapper">
       <canvas id="gameCanvas" width="360" height="640"></canvas>
+    </div>
+  </div>
+
+  <!-- クイズゲームUI -->
+  <div id="quiz-game-ui" style="display:none">
+    <div id="quiz-hud" class="hud-block">
+      <button id="quiz-back-btn" class="btn-icon"><span class="material-symbols-outlined">arrow_back</span></button>
+      <div class="hud-center">
+        <span id="quiz-level-display" class="level-badge">QUIZ 1 / 10</span>
+      </div>
+      <!-- レイアウト維持用の空ブロック -->
+      <span style="width: 36px; display: inline-block;"></span>
+    </div>
+
+    <div id="quiz-question-box" class="quiz-question-box wood-card">
+      <h3 id="quiz-question-name" class="quiz-question-name">クイズ 1</h3>
+      <p id="quiz-question-text" class="quiz-question-text">問題文がここに入ります。</p>
+    </div>
+
+    <div id="quiz-canvas-wrapper" class="canvas-wrapper">
+      <canvas id="quizCanvas" width="360" height="640"></canvas>
+      <button id="quiz-decide-btn" class="btn btn-primary quiz-decide-btn" style="display:none">決定</button>
+    </div>
+
+    <!-- 画面下部の選択肢 A, B, C ボタン -->
+    <div id="quiz-choice-container" class="quiz-choice-container">
+      <button class="quiz-choice-btn" data-choice="A">A</button>
+      <button class="quiz-choice-btn" data-choice="B">B</button>
+      <button class="quiz-choice-btn" data-choice="C">C</button>
+    </div>
+  </div>
+
+  <!-- クイズ結果画面 -->
+  <div id="quiz-result-screen" class="overlay" style="display:none">
+    <div class="result-card wood-card">
+      <h2 id="quiz-result-title" class="result-title">正解！</h2>
+      <p id="quiz-result-message" class="result-message">素晴らしい！正解です。</p>
+      <button id="quiz-next-btn" class="btn btn-primary">次のステージへ</button>
+      <button id="quiz-retry-btn" class="btn btn-secondary">リトライ</button>
+      <button id="quiz-title-btn" class="btn btn-secondary">タイトルへ</button>
     </div>
   </div>
 
