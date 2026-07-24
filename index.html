@@ -4,66 +4,202 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Amida Drop | あみだくじアクション</title>
-  <meta name="description" content="落下するボールをあみだくじの横線でゴールへ誘導するリアルタイムアクションパズルゲーム。" />
+  <meta name="description" content="落下するボールをあみだくじの横線でゴールへ誘導するリアルタイムアクションパズルゲーム。200ステージ収録。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
 <div id="app">
+  <!-- 豪華フラッシュ演出用オーバーレイ -->
+  <div id="flash-overlay"></div>
 
   <!-- タイトル画面 -->
   <div id="title-screen" class="overlay">
-    <div class="title-card">
+    <div class="title-card wood-card">
+      <div class="title-board-frame">
       <h1 class="game-title">AMIDA<br><span>DROP</span></h1>
       <p class="game-subtitle">あみだくじアクション</p>
+      </div><!-- /.title-board-frame -->
       <div class="how-to">
-        <div class="how-row"><span class="how-icon">🎯</span><span>ボールを★ゴールへ誘導してスコア獲得</span></div>
-        <div class="how-row"><span class="how-icon">👆</span><span>タップで横線を引く / もう一度タップで消す</span></div>
-        <div class="how-row"><span class="how-icon">⚡</span><span>ENERGYゲージがなくなるとゲームオーバー</span></div>
-        <div class="how-row"><span class="how-icon">★</span><span>★に入るとゲージ回復！✕に入るとゲージ大幅減</span></div>
-        <div class="how-row"><span class="how-icon">🟡</span><span>金の線→スコア・Energy UP、紫の線→DOWN</span></div>
-        <div class="how-row"><span class="how-icon">🔵</span><span>紫の太線はシステムが配置（消せない）</span></div>
-        <div class="how-row"><span class="how-icon">🎨</span><span>色付きのボールは同じ色のゴールに入れる！</span></div>
+        <div class="how-row"><span class="how-icon material-symbols-outlined" style="color:var(--target);">my_location</span><span>ボールを★ゴールへ誘導してスコア獲得</span></div>
+        <div class="how-row"><span class="how-icon material-symbols-outlined">touch_app</span><span>タップで横線を引く / もう一度タップで消す</span></div>
+        <div class="how-row"><span class="how-icon" style="color:#f472b6;font-size:1rem;">⇌</span><span>ピンク二重線 = ワープ、虹線 = 色変え</span></div>
+        <div class="how-row"><span class="how-icon" style="color:#ffffff;font-size:1rem;">●</span><span>白点滅線 = ON/OFFで通れる、水色線 = 上下移動</span></div>
+        <div class="how-row"><span class="how-icon" style="color:#f97316;font-size:1rem;">▶</span><span>オレンジ線 = スピードアップ！</span></div>
       </div>
       <button id="start-btn" class="btn btn-primary">ゲームスタート</button>
+    </div>
+  </div>
+
+  <!-- モード選択画面 -->
+  <div id="mode-screen" class="overlay" style="display:none">
+    <div class="mode-card wood-card">
+      <h2 class="mode-title">モード選択</h2>
+      <button id="mode-stage-btn" class="mode-btn">
+        <span class="mode-btn-icon material-symbols-outlined">sports_esports</span>
+        <span class="mode-btn-label">ステージクリア</span>
+        <span class="mode-btn-sub">200ステージ・★評価・進捗保存</span>
+      </button>
+      <button id="mode-endless-btn" class="mode-btn mode-btn-endless">
+        <span class="mode-btn-icon material-symbols-outlined">all_inclusive</span>
+        <span class="mode-btn-label">エンドレス</span>
+        <span class="mode-btn-sub">エナジーゲージが0になるまで！</span>
+      </button>
+      <button id="mode-quiz-btn" class="mode-btn mode-btn-quiz">
+        <span class="mode-btn-icon material-symbols-outlined">quiz</span>
+        <span class="mode-btn-label">クイズモード</span>
+        <span class="mode-btn-sub">軌道を予測して正解を導き出そう！</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ステージ選択画面 -->
+  <div id="stage-select" class="overlay stage-select-overlay" style="display:none">
+    <div class="stage-select-inner">
+      <div class="stage-select-header">
+        <button id="stage-back-btn" class="btn-icon"><span class="material-symbols-outlined">arrow_back</span></button>
+        <h2 class="stage-select-title">ステージ選択</h2>
+        <span></span>
+      </div>
+      <div id="stage-grid" class="stage-grid"></div>
+    </div>
+  </div>
+
+  <!-- クイズステージ選択画面 -->
+  <div id="quiz-stage-select" class="overlay stage-select-overlay" style="display:none">
+    <div class="stage-select-inner">
+      <div class="stage-select-header">
+        <button id="quiz-stage-back-btn" class="btn-icon"><span class="material-symbols-outlined">arrow_back</span></button>
+        <h2 class="stage-select-title">クイズ ステージ選択</h2>
+        <span></span>
+      </div>
+      <div id="quiz-stage-grid" class="stage-grid"></div>
+    </div>
+  </div>
+
+  <!-- ステージ情報画面 -->
+  <div id="stage-info-screen" class="overlay" style="display:none">
+    <div class="stage-info-card wood-card">
+      <h2 id="stage-info-title" class="stage-info-title">STAGE 1</h2>
+      <p id="stage-info-desc" class="stage-info-desc"></p>
+      <div class="stage-info-rows">
+        <div class="stage-info-row" id="stage-info-goal"></div>
+        <div class="stage-info-row" id="stage-info-miss"></div>
+        <div class="stage-info-row" id="stage-info-gimmick"></div>
+      </div>
+      <button id="stage-start-btn" class="btn btn-primary">スタート！</button>
+      <button id="stage-info-back-btn" class="btn btn-secondary">戻る</button>
     </div>
   </div>
 
   <!-- ゲームUI -->
   <div id="game-ui" style="display:none">
     <div id="hud">
-      <div class="hud-block">
-        <span class="hud-label">SCORE</span>
-        <span id="score-display" class="hud-value score-val">0</span>
-      </div>
-      <div class="hud-block hud-center">
+      <div class="hud-block hud-center" id="hud-center-block">
         <span id="level-display" class="level-badge">LV 1</span>
-        <span id="combo-display" class="combo-badge" style="opacity:0">COMBO ×1</span>
       </div>
+      <!-- ステージ情報 -->
+      <div class="hud-block hud-right" id="hud-stage-info" style="display:none">
+        <div id="hud-goal-row" class="hud-stage-row" style="display:none">
+          <span class="hud-label">GOAL</span>
+          <span id="goal-display" class="hud-value" style="color:var(--target);font-size:1rem">0 / -</span>
+        </div>
+        <div id="hud-miss-row" class="hud-stage-row" style="display:none">
+          <span id="miss-display" class="hud-miss">MISS: 0</span>
+        </div>
+        <div id="hud-time-row" class="hud-stage-row" style="display:none">
+          <span id="time-display" class="hud-time">--s</span>
+        </div>
+      </div>
+      <!-- ポーズボタン -->
+      <button id="pause-btn" class="btn-icon" style="padding:4px; margin-left:4px;"><span class="material-symbols-outlined">pause</span></button>
     </div>
+
+    <!-- ゲージを独立させて幅広にする（ラベルは非表示） -->
+    <div id="hud-gauge-row" class="hud-gauge-row">
+      <div class="gauge-track"><div id="gauge-bar-inner" class="gauge-bar"></div></div>
+    </div>
+
     <div id="canvas-wrapper">
       <canvas id="gameCanvas" width="360" height="640"></canvas>
     </div>
   </div>
 
+  <!-- クイズゲームUI -->
+  <div id="quiz-game-ui" style="display:none">
+    <div id="quiz-hud" class="hud-block">
+      <button id="quiz-back-btn" class="btn-icon"><span class="material-symbols-outlined">arrow_back</span></button>
+      <div class="hud-center">
+        <span id="quiz-level-display" class="level-badge">QUIZ 1 / 10</span>
+      </div>
+      <!-- 早送りトグルスイッチ -->
+      <button id="quiz-fast-forward-btn" class="btn-icon quiz-speed-btn" title="早送りスイッチ">
+        <span class="material-symbols-outlined">fast_forward</span>
+      </button>
+    </div>
+
+    <div id="quiz-question-box" class="quiz-question-box wood-card">
+      <h3 id="quiz-question-name" class="quiz-question-name">クイズ 1</h3>
+      <p id="quiz-question-text" class="quiz-question-text">問題文がここに入ります。</p>
+    </div>
+
+    <div id="quiz-canvas-wrapper" class="canvas-wrapper">
+      <canvas id="quizCanvas" width="360" height="640"></canvas>
+      <button id="quiz-decide-btn" class="btn btn-primary quiz-decide-btn" style="display:none">決定</button>
+    </div>
+
+    <!-- 画面下部の選択肢 A, B, C ボタン -->
+    <div id="quiz-choice-container" class="quiz-choice-container">
+      <button class="quiz-choice-btn" data-choice="A">A</button>
+      <button class="quiz-choice-btn" data-choice="B">B</button>
+      <button class="quiz-choice-btn" data-choice="C">C</button>
+    </div>
+  </div>
+
+  <!-- クイズ結果画面 -->
+  <div id="quiz-result-screen" class="overlay" style="display:none">
+    <div class="result-card wood-card">
+      <h2 id="quiz-result-title" class="result-title">正解！</h2>
+      <p id="quiz-result-message" class="result-message">素晴らしい！正解です。</p>
+      <button id="quiz-next-btn" class="btn btn-primary">次のステージへ</button>
+      <button id="quiz-retry-btn" class="btn btn-secondary">リトライ</button>
+      <button id="quiz-title-btn" class="btn btn-secondary">タイトルへ</button>
+    </div>
+  </div>
+
+  <!-- ポーズ画面 -->
+  <div id="pause-screen" class="overlay" style="display:none">
+    <div class="result-card wood-card">
+      <h2 class="result-title" style="color:var(--text); text-shadow:0 0 20px rgba(255,255,255,0.3);">PAUSE</h2>
+      <button id="resume-btn" class="btn btn-primary">再開</button>
+      <button id="pause-title-btn" class="btn btn-secondary">タイトルへ</button>
+    </div>
+  </div>
+
   <!-- ゲームオーバー -->
   <div id="game-over-screen" class="overlay" style="display:none">
-    <div class="result-card">
+    <div class="result-card wood-card">
       <h2 class="result-title">GAME OVER</h2>
       <div class="result-stats">
-        <div class="stat-row">
-          <span class="stat-label">FINAL SCORE</span>
-          <span id="final-score" class="stat-value">0</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">MAX COMBO</span>
-          <span id="final-combo" class="stat-value combo-color">0</span>
-        </div>
       </div>
       <button id="restart-btn" class="btn btn-primary">TRY AGAIN</button>
       <button id="title-btn" class="btn btn-secondary">タイトルへ</button>
+    </div>
+  </div>
+
+  <!-- ステージクリア -->
+  <div id="stage-clear-screen" class="overlay" style="display:none">
+    <div class="clear-card wood-card">
+      <h2 class="clear-title">STAGE CLEAR!</h2>
+      <div id="clear-stars" class="clear-stars-row"></div>
+      <div class="result-stats">
+      </div>
+      <button id="clear-next-btn" class="btn btn-primary">次のステージ</button>
+      <button id="clear-retry-btn" class="btn btn-secondary">もう一度</button>
+      <button id="clear-title-btn" class="btn btn-secondary">タイトルへ</button>
     </div>
   </div>
 
